@@ -16,14 +16,13 @@ typedef enum{
 typedef struct _INA219_C{
 	ina219_ret_t status;
 	// -- configuration
-	uint16_t conf_calibration_value;
-	uint8_t conf_current_coef;
-	uint8_t conf_power_coef;
+	ina219_calibration_t conf_calibration_value;
+	ina219_gain_t conf_gain_value;
 	// -- data
-	uint16_t voltage;
-	uint16_t shunt_voltage;
-	uint16_t current;
-	uint16_t power;
+	int16_t voltage;
+	int16_t shunt_voltage;
+	int16_t current;
+	int16_t power;
 }_INA219_C;
 
 extern _INA219_C shunt_sensor;
@@ -33,5 +32,7 @@ ina219_ret_t ina219_get_power();
 ina219_ret_t ina219_get_current();
 ina219_ret_t ina219_get_voltage();
 ina219_ret_t ina219_get_shunt_voltage();
-
+ina219_ret_t ina219_config(ina219_gain_t gain);
+void ina219_change_calibration_value(ina219_calibration_t new_calib);
+ina219_ret_t ina219_calibrate();
 #endif

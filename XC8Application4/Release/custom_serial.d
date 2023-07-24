@@ -13,6 +13,7 @@ custom_serial.d custom_serial.o: .././custom_serial.c \
  c:\program\ files\microchip\xc8\v2.36\avr\avr\include\avr\fuse.h \
  c:\program\ files\microchip\xc8\v2.36\avr\avr\include\avr\lock.h \
  c:\program\ files\microchip\xc8\v2.36\avr\avr\include\avr\interrupt.h \
+ c:\program\ files\microchip\xc8\v2.36\avr\avr\include\stdio.h \
  c:\program\ files\microchip\xc8\v2.36\avr\avr\include\string.h \
  .././custom_serial.h .././main.h \
  c:\program\ files\microchip\xc8\v2.36\avr\lib\gcc\avr\5.4.0\include\stdbool.h
@@ -44,6 +45,8 @@ c:\program\ files\microchip\xc8\v2.36\avr\avr\include\avr\fuse.h:
 c:\program\ files\microchip\xc8\v2.36\avr\avr\include\avr\lock.h:
 
 c:\program\ files\microchip\xc8\v2.36\avr\avr\include\avr\interrupt.h:
+
+c:\program\ files\microchip\xc8\v2.36\avr\avr\include\stdio.h:
 
 c:\program\ files\microchip\xc8\v2.36\avr\avr\include\string.h:
 

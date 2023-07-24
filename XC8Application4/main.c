@@ -43,10 +43,28 @@ int main(void){
 				break;
 			case(PAUSE):
 				break;	
-			case(CONFIG):
+			case(CONFIG_1):
+				ina219_change_calibration_value(CALIBRATION_40mV_400mA);
+				ina219_calibrate();
+				ina219_config(INA219_CONFIG_GAIN_1_40mV_400mA);
+				break;
+			case(CONFIG_2):
+				ina219_change_calibration_value(CALIBRATION_80mV_800mA);
+				ina219_calibrate();
+				ina219_config(INA219_CONFIG_GAIN_2_80mV_800mA);
+				break;
+			case(CONFIG_3):
+				ina219_change_calibration_value(CALIBRATION_160mV_1A6);
+				ina219_calibrate();
+				ina219_config(INA219_CONFIG_GAIN_4_160mV_1A6);
+				break;
+			case(CONFIG_4):
+				ina219_change_calibration_value(CALIBRATION_320mV_2A);
+				ina219_calibrate();
+				ina219_config(INA219_CONFIG_GAIN_8_320mV_2A);
 				break;
 			default: break;
 		}
-		_delay_ms(1000);
+		_delay_ms(200);
 	}
 }

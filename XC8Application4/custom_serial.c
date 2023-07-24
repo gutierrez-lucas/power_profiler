@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdio.h>
 #include <string.h>
 #include "custom_serial.h"
 #include "main.h"
@@ -64,15 +65,24 @@ sm_command_t logic_handler() {
 	if(!strncmp(rx_line, "start", strlen(rx_line))) {
 			serial_string("START\n");
 			return(START);
-		}else if(!strncmp(rx_line, "/stop", strlen(rx_line))) {
+		}else if(!strncmp(rx_line, "stop", strlen(rx_line))) {
 			serial_string("STOP\n");
 			return(STOP);
-		}else if(!strncmp(rx_line, "/pause", strlen(rx_line))) {
+		}else if(!strncmp(rx_line, "pause", strlen(rx_line))) {
 			serial_string("PAUSE\n");
-			return(PAUSE);
-		}else if(!strncmp(rx_line, "/config", strlen(rx_line))) {
-			serial_string("CONFIG\n");
-			return(CONFIG);
+			return(PAUSE);		
+		}else if(!strncmp(rx_line, "config1", strlen(rx_line))) {
+			serial_string("CONFIG_1\n");
+			return(CONFIG_1);		
+		}else if(!strncmp(rx_line, "config2", strlen(rx_line))) {
+			serial_string("CONFIG_2\n");
+			return(CONFIG_2);
+		}else if(!strncmp(rx_line, "config3", strlen(rx_line))) {
+			serial_string("CONFIG_3\n");
+			return(CONFIG_3);
+		}else if(!strncmp(rx_line, "config4", strlen(rx_line))) {
+			serial_string("CONFIG_4\n");
+			return(CONFIG_4);			
 		}else{
 			serial_string("FAIL\n");
 			// Preview current

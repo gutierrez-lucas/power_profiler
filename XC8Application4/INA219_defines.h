@@ -15,13 +15,6 @@ enum{
 	INA219_CONFIG_BVOLTAGERANGE_32V =        (0x2000),  // 0-32V Range
 };
 
-enum{
-	INA219_CONFIG_GAIN_1_40MV        =       (0x0000),  // Gain 1, 40mV Range
-	INA219_CONFIG_GAIN_2_80MV        =       (0x0800),  // Gain 2, 80mV Range
-	INA219_CONFIG_GAIN_4_160MV       =       (0x1000),  // Gain 4, 160mV Range
-	INA219_CONFIG_GAIN_8_320MV       =       (0x1800),  // Gain 8, 320mV Range
-};
-
 enum {
 	INA219_CONFIG_BADCRES_9BIT       =       (0x0000),  // 9-bit bus res = 0..511
 	INA219_CONFIG_BADCRES_10BIT      =       (0x0080),  // 10-bit bus res = 0..1023
@@ -53,4 +46,18 @@ enum {
 	INA219_CONFIG_MODE_BVOLT_CONTINUOUS   =  (0x0006),
 	INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS = (0x0007),
 };
+
+typedef enum{
+	CALIBRATION_40mV_400mA	= (33573),
+	CALIBRATION_80mV_800mA	= (16777),
+	CALIBRATION_160mV_1A6	= (8388),
+	CALIBRATION_320mV_2A	= (4194)
+}ina219_calibration_t;	
+
+typedef enum{
+	INA219_CONFIG_GAIN_1_40mV_400mA        =       (0x0000),  
+	INA219_CONFIG_GAIN_2_80mV_800mA        =       (0x0800),  
+	INA219_CONFIG_GAIN_4_160mV_1A6		   =       (0x1000),  
+	INA219_CONFIG_GAIN_8_320mV_2A	       =       (0x1800),  
+}ina219_gain_t;
 #endif

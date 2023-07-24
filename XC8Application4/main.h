@@ -7,7 +7,10 @@ typedef enum{
 	START,
 	STOP,
 	PAUSE,
-	CONFIG,
+	CONFIG_1,
+	CONFIG_2,
+	CONFIG_3,
+	CONFIG_4,
 	FAIL
 }sm_command_t;
 
