@@ -112,7 +112,7 @@ class serialPlot:
 # creating data
 # defining function to add line plot
 
-portName = 'COM8'     # for windows users
+portName = 'COM6'     # for windows users
 baudRate = 9600
 maxPlotLength = 100
 dataNumBytes = 7        # number of bytes of 1 data point
@@ -159,6 +159,37 @@ def main():
     yLimit = [(0, 10), (0, 20), (-1, 1)]
     style = ['r-', 'g-', 'b-']    # linestyles for the different plots
     
+        # defining button and add its functionality
+    axes = plt.axes([0.45, 0.2, 0.1, 0.075])
+    bn_stop = Button(axes, 'STOP',color="yellow")
+    bn_stop.on_clicked(bt_stop)
+    
+    axes = plt.axes([0.25, 0.2, 0.1, 0.075])
+    bn_pause = Button(axes, 'PAUSE',color="yellow")
+    bn_pause.on_clicked(bt_pause)    
+
+    axes = plt.axes([0.05, 0.2, 0.1, 0.075])
+    bn_start = Button(axes, 'START',color="yellow")
+    bn_start.on_clicked(bt_start)
+    
+    axes = plt.axes([0.45, 0.1, 0.15, 0.075])
+    bn_confg1 = Button(axes, '1 Sample\ne/ 532uS',color="yellow")
+    bn_confg1.on_clicked(bt_conf1)    
+
+    axes = plt.axes([0.3, 0.1, 0.15, 0.075])
+    bn_confg2 = Button(axes, '4 Sample\ne/ 213uS',color="yellow")
+    bn_confg2.on_clicked(bt_conf2)    
+    
+    axes = plt.axes([0.15, 0.1, 0.15, 0.075])
+    bn_confg3 = Button(axes, '16 Sample\ne/ 851uS',color="yellow")
+    bn_confg3.on_clicked(bt_conf3) 
+
+    axes = plt.axes([0, 0.1, 0.15, 0.075])
+    bn_confg4 = Button(axes, '32 Sample\ne/ 17mS',color="yellow")
+    bn_confg4.on_clicked(bt_conf4)
+    
+    plt.savefig('filename1')
+    
     for i in range(0,2):
         fig, ax = makeFigure(xLimit[i], yLimit[i], title[i])
         lines = ax.plot([], [], style[i], label=lineLabelText[i])[0]
@@ -167,35 +198,8 @@ def main():
         anim.append(animation.FuncAnimation(fig, s.getSerialData, fargs=(lines, lineValueText, lineLabelText[i], timeText, i), interval=pltInterval))  # fargs has to be a tuple
         plt.legend(loc="upper left")
 
-    # defining button and add its functionality
+        
     plt.subplots_adjust(left = 0.3, bottom = 0.25)
-    axes = plt.axes([0.71, 0.05, 0.1, 0.075])
-    bn_stop = Button(axes, 'STOP',color="yellow")
-    bn_stop.on_clicked(bt_stop)
-    
-    axes = plt.axes([0.55, 0.05, 0.1, 0.075])
-    bn_pause = Button(axes, 'PAUSE',color="yellow")
-    bn_pause.on_clicked(bt_pause)    
-
-    axes = plt.axes([0.41, 0.05, 0.1, 0.075])
-    bn_start = Button(axes, 'START',color="yellow")
-    bn_start.on_clicked(bt_start)
-    
-    axes = plt.axes([0.02, 0.8, 0.15, 0.075])
-    bn_confg1 = Button(axes, '1 Sample\ne/ 532uS',color="yellow")
-    bn_confg1.on_clicked(bt_conf1)    
-
-    axes = plt.axes([0.02, 0.6, 0.15, 0.075])
-    bn_confg2 = Button(axes, '4 Sample\ne/ 213uS',color="yellow")
-    bn_confg2.on_clicked(bt_conf2)    
-    
-    axes = plt.axes([0.02, 0.4, 0.15, 0.075])
-    bn_confg3 = Button(axes, '16 Sample\ne/ 851uS',color="yellow")
-    bn_confg3.on_clicked(bt_conf3) 
-
-    axes = plt.axes([0.02, 0.2, 0.15, 0.075])
-    bn_confg4 = Button(axes, '32 Sample\ne/ 17mS',color="yellow")
-    bn_confg4.on_clicked(bt_conf4)        
 
     plt.show()
 

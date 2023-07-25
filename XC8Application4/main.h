@@ -20,6 +20,21 @@ typedef enum{
 	FAIL
 }sm_command_t;
 
+
+typedef enum{
+	DELAY_600US = 1,
+	DELAY_3MS,
+	DELAY_9MS,
+	DELAY_18MS
+}sm_delay_t;
+
+typedef struct sm{
+	sm_command_t state;
+	sm_command_t prev_state;
+	sm_delay_t	delay;
+}sm_c;
+
+extern sm_c state_machine;
 extern sm_command_t sm;
 extern sm_command_t sm_prev;
 

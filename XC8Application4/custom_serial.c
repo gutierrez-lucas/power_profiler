@@ -17,8 +17,8 @@ ISR(USART_RX_vect)
 	rx_line[rx_line_pos++] = input;
 
 	if(rx_line_pos >= RX_LINE_SIZE || (input == '\n' && rx_line_pos > 0)) { 	// Handle interrupt
-		sm_prev = sm;
-		sm = logic_handler(); 		// Handle result
+		state_machine.prev_state = state_machine.state;
+		state_machine.state = logic_handler(); 		// Handle result
 		rx_line_pos = 0;  // Resize
 		waiting = 0; // Unblock
 	}
