@@ -37,12 +37,14 @@ int main(void){
 				ina219_get_current();
 				ina219_get_shunt_voltage();
 #ifdef PRINT_SENSOR_DATA
-				sprintf(main_print_buff, "%06d", shunt_sensor.current); // python script expects 6 bytes!
+				sprintf(main_print_buff, "c%06d\0", shunt_sensor.current); // python script expects 6 bytes!
 				serial_string(main_print_buff);
+				sprintf(main_print_buff, "v%06d\0", shunt_sensor.voltage); // python script expects 6 bytes!
+				serial_string(main_print_buff);				
 #endif				
 				break;
 			case(STOP):
-				sprintf(main_print_buff, "%06d", 0); // python script expects 6 bytes!
+				sprintf(main_print_buff, "c%06d\0", 0); // python script expects 6 bytes!
 				serial_string(main_print_buff);
 				break;
 			case(PAUSE):

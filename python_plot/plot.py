@@ -19,14 +19,18 @@ class serialPlot:
         self.plotMaxLength = plotLength
         self.dataNumBytes = dataNumBytes
         self.rawData = bytearray(dataNumBytes)
-        self.data = collections.deque([0] * plotLength, maxlen=plotLength)
+        self.data = []
+        for i in range(2):   # give an array for each type of data and store them in a list
+            self.data.append(collections.deque([i] * plotLength, maxlen=plotLength))        
         self.isRun = True
         self.isReceiving = False
         self.thread = None
         self.plotTimer = 0
         self.previousTimer = 0
-        self.my_value = 0
-        self.my_tuple = ()
+        self.current_value = 0
+        self.voltage_value = 0
+        self.voltage_tuple = ()
+        self.current_tuple = ()
         # self.csvData = []
 
         print('Trying to connect to: ' + str(serialPort) + ' at ' + str(serialBaud) + ' BAUD.')
@@ -47,18 +51,45 @@ class serialPlot:
             # Block till we start receiving values
             while self.isReceiving != True:
                 time.sleep(0.1)
-
-    def getSerialData(self, frame, lines, lineValueText, lineLabel, timeText):
-        currentTimer = time.perf_counter()
-        self.plotTimer = int((currentTimer - self.previousTimer) * 1000)     # the first reading will be erroneous
-        self.previousTimer = currentTimer
-        timeText.set_text('Plot Interval = ' + str(self.plotTimer) + 'ms')
-        value,  = self.my_tuple    # use 'h' for a 2 byte integer
-        # value = int.from_bytes(self.rawData, 'little')
-        # print(value)
+                
+    def parse_data(self):
+        self.current_value = 0
+        self.voltage_value = 0
         
-        self.data.append(value)    # we get the latest data point and append it to our array
-        lines.set_data(range(self.plotMaxLength), self.data)
+        if chr(self.rawData[0]) == 'c':   
+            for x in range(1,len(self.rawData)):  
+                self.current_value += (self.rawData[x]-48)*10**(len(self.rawData)-(x+1))
+            self.current_tuple = (self.current_value/1000,)
+            # print("current", self.current_tuple)
+        elif chr(self.rawData[0]) == 'v':
+            for x in range(1,len(self.rawData)):  
+                self.voltage_value += (self.rawData[x]-48)*10**(len(self.rawData)-(x+1))
+            self.voltage_tuple = (self.voltage_value/1000,)
+            # print("voltage", self.voltage_tuple)
+            
+    def getSerialData(self, frame, lines, lineValueText, lineLabel, timeText, pltNumber):       
+        # print("My value starts from ", self.rawData[x], "getting to ", my_value, "for x:", x)                              
+        # print("final ",my_value)
+        # print(self.rawData)
+        
+        if pltNumber == 0:  # in order to make all the clocks show the same reading
+            currentTimer = time.perf_counter()
+            self.plotTimer = int((currentTimer - self.previousTimer) * 1000)     # the first reading will be erroneous
+            self.previousTimer = currentTimer
+            if not self.voltage_tuple:
+                return
+            else:     
+                value,  = self.voltage_tuple       
+        elif pltNumber == 1:
+            if not self.current_tuple:
+                return
+            else:    
+                value,  = self.current_tuple    
+
+        timeText.set_text('Plot Interval = ' + str(self.plotTimer) + 'ms')
+        
+        self.data[pltNumber].append(value)    # we get the latest data point and append it to our array
+        lines.set_data(range(self.plotMaxLength), self.data[pltNumber])
         lineValueText.set_text('[' + lineLabel + '] = ' + str(value))
         # self.csvData.append(self.data[-1])
 
@@ -67,15 +98,9 @@ class serialPlot:
         self.serialConnection.reset_input_buffer()
         while (self.isRun):
             self.serialConnection.readinto(self.rawData)
+            self.parse_data()
             self.isReceiving = True
-            self.my_value = 0
-            for x in range(len(self.rawData)):  
-                self.my_value += (self.rawData[x]-48)*10**(len(self.rawData)-(x+1))
-                # print("My value starts from ", self.rawData[x], "getting to ", my_value, "for x:", x)                              
-            # print("final ",my_value)
-            self.my_tuple = (self.my_value,)
-            print(self.rawData)
-
+        
     def close(self):
         self.isRun = False
         self.thread.join()
@@ -87,16 +112,23 @@ class serialPlot:
 # creating data
 # defining function to add line plot
 
-portName = 'COM6'     # for windows users
+portName = 'COM8'     # for windows users
 baudRate = 9600
 maxPlotLength = 100
-dataNumBytes = 6        # number of bytes of 1 data point
+dataNumBytes = 7        # number of bytes of 1 data point
 s = serialPlot(portName, baudRate, maxPlotLength, dataNumBytes)   # initializes all required variables
+anim = []
 
 def bt_stop(val):
     s.writeSerial('stop\n')
+def bt_pause(val):
+    s.writeSerial('pause\n') 
+    anim[0].event_source.stop()
+    anim[1].event_source.stop()
 def bt_start(val):
     s.writeSerial('start\n') 
+    anim[0].event_source.start()
+    anim[1].event_source.start()
 def bt_conf1(val):
     s.writeSerial('config1\n') 
 def bt_conf2(val):
@@ -105,39 +137,45 @@ def bt_conf3(val):
     s.writeSerial('config3\n') 
 def bt_conf4(val):
     s.writeSerial('config4\n')             
-           
+       
+def makeFigure(xLimit, yLimit, title):
+    xmin, xmax = xLimit
+    ymin, ymax = yLimit
+    fig = plt.figure()
+    ax = plt.axes(xlim=(xmin, xmax), ylim=(int(ymin - (ymax - ymin) / 10), int(ymax + (ymax - ymin) / 10)))
+    ax.set_title(title)
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Output")
+    return fig, ax    
     
 def main():
     # portName = '/dev/ttyUSB0'
-
     s.readSerialStart()                                               # starts background thread
-
     # plotting starts below
-    pltInterval = 18    # Period at which the plot animation updates [ms]
-    xmin = 0
-    xmax = maxPlotLength
-    ymin = -(1)
-    ymax = 20000
-    fig = plt.figure()
-    ax = fig.subplots()
-    ax = plt.axes(xlim=(xmin, xmax), ylim=(float(ymin - (ymax - ymin) / 10), float(ymax + (ymax - ymin) / 10)))
-    ax.set_title('INA219 AVR-Current profiler')
-    ax.set_xlabel("time")
-    ax.set_ylabel("Current mA")
-
-    lineLabel = 'Current Value'
-    timeText = ax.text(0.50, 0.95, '', transform=ax.transAxes)
-    lines = ax.plot([], [], label=lineLabel)[0]
-    lineValueText = ax.text(0.50, 0.90, '', transform=ax.transAxes)
-    anim = animation.FuncAnimation(fig, s.getSerialData, fargs=(lines, lineValueText, lineLabel, timeText), interval=pltInterval)    # fargs has to be a tuple
-
-    plt.legend(loc="upper left")
+    pltInterval = 50    # Period at which the plot animation updates [ms]
+    lineLabelText = ['V', 'C', 'Z']
+    title = ['Voltage', ' Current', 'Z Acceleration']
+    xLimit = [(0, maxPlotLength), (0, maxPlotLength), (0, maxPlotLength)]
+    yLimit = [(0, 10), (0, 20), (-1, 1)]
+    style = ['r-', 'g-', 'b-']    # linestyles for the different plots
+    
+    for i in range(0,2):
+        fig, ax = makeFigure(xLimit[i], yLimit[i], title[i])
+        lines = ax.plot([], [], style[i], label=lineLabelText[i])[0]
+        timeText = ax.text(0.50, 0.95, '', transform=ax.transAxes)
+        lineValueText = ax.text(0.50, 0.90, '', transform=ax.transAxes)
+        anim.append(animation.FuncAnimation(fig, s.getSerialData, fargs=(lines, lineValueText, lineLabelText[i], timeText, i), interval=pltInterval))  # fargs has to be a tuple
+        plt.legend(loc="upper left")
 
     # defining button and add its functionality
     plt.subplots_adjust(left = 0.3, bottom = 0.25)
     axes = plt.axes([0.71, 0.05, 0.1, 0.075])
     bn_stop = Button(axes, 'STOP',color="yellow")
     bn_stop.on_clicked(bt_stop)
+    
+    axes = plt.axes([0.55, 0.05, 0.1, 0.075])
+    bn_pause = Button(axes, 'PAUSE',color="yellow")
+    bn_pause.on_clicked(bt_pause)    
 
     axes = plt.axes([0.41, 0.05, 0.1, 0.075])
     bn_start = Button(axes, 'START',color="yellow")
