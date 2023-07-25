@@ -32,7 +32,7 @@ ina219_ret_t ina219_get_power();
 ina219_ret_t ina219_get_current();
 ina219_ret_t ina219_get_voltage();
 ina219_ret_t ina219_get_shunt_voltage();
-ina219_ret_t ina219_config(ina219_gain_t gain);
+ina219_ret_t ina219_config(ina219_rate_t rate);
 void ina219_change_calibration_value(ina219_calibration_t new_calib);
 ina219_ret_t ina219_calibrate();
 #endif

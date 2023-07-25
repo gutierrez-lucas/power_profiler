@@ -211,8 +211,8 @@ ret_code_t i2c_read(uint8_t slave_addr, uint8_t* p_data, uint8_t len, bool endia
 		}
 		p_data[0] = tw_read(TW_READ_NACK);
 #ifdef I2C_DEBUG		
-		sprintf(bbb+strlen(bbb), "%d\n////", p_data[0]);
-		serial_string(bbb);
+		sprintf(i2c_print_buffer+strlen(i2c_print_buffer), "%d\n////", p_data[0]);
+		serial_string(i2c_print_buffer);
 #endif		
 	}else{ // BIG_ENDIAN
 		for (uint8_t i = 0; i < len - 1; i++){

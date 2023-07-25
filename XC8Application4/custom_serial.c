@@ -17,6 +17,7 @@ ISR(USART_RX_vect)
 	rx_line[rx_line_pos++] = input;
 
 	if(rx_line_pos >= RX_LINE_SIZE || (input == '\n' && rx_line_pos > 0)) { 	// Handle interrupt
+		sm_prev = sm;
 		sm = logic_handler(); 		// Handle result
 		rx_line_pos = 0;  // Resize
 		waiting = 0; // Unblock
@@ -60,30 +61,43 @@ bool compare_string(char *first, const char *second) {
 sm_command_t logic_handler() {
 	char print_h[50];
 	// Check commands
-	sprintf(print_h, "%s - %d\n", rx_line, strlen(rx_line));
-	serial_string(print_h);
 	if(!strncmp(rx_line, "start", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO		
 			serial_string("START\n");
+#endif			
 			return(START);
 		}else if(!strncmp(rx_line, "stop", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("STOP\n");
+#endif
 			return(STOP);
 		}else if(!strncmp(rx_line, "pause", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("PAUSE\n");
+#endif
 			return(PAUSE);		
 		}else if(!strncmp(rx_line, "config1", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("CONFIG_1\n");
+#endif
 			return(CONFIG_1);		
 		}else if(!strncmp(rx_line, "config2", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("CONFIG_2\n");
+#endif
 			return(CONFIG_2);
 		}else if(!strncmp(rx_line, "config3", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("CONFIG_3\n");
+#endif
 			return(CONFIG_3);
 		}else if(!strncmp(rx_line, "config4", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("CONFIG_4\n");
+#endif
 			return(CONFIG_4);			
 		}else{
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("FAIL\n");
 			// Preview current
 			serial_string("input: ");
@@ -94,6 +108,7 @@ sm_command_t logic_handler() {
 				rx_buffer_pos = 0;
 				memset(rx_buffer, 0, RX_BUFFER_SIZE);
 			}
+#endif
 		return(FAIL);
 	}
 }

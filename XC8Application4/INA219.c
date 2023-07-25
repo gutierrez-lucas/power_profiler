@@ -39,13 +39,13 @@ ina219_ret_t ina219_calibrate(){
 	return(OK);
 }
 
-ina219_ret_t ina219_config(ina219_gain_t gain){ // by the moment I only care about gain configuration by the end user
+ina219_ret_t ina219_config(ina219_rate_t rate){ // by the moment I only care about gain configuration by the end user
 	uint8_t data_out[3];
 	
 	uint16_t config =	INA219_CONFIG_BVOLTAGERANGE_16V |
-						gain |
+						INA219_CONFIG_GAIN_1_40mV_400mA |
 						INA219_CONFIG_BADCRES_12BIT |
-						INA219_CONFIG_SADCRES_12BIT_1S_532US |
+						rate |
 						INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
 	
 	data_in.fb = config;
@@ -73,7 +73,7 @@ ina219_ret_t ina219_init(){
 	shunt_sensor.conf_calibration_value = CALIBRATION_40mV_400mA; // default 
 	
 	if(ina219_calibrate() != OK) return(WRITE_FAIL);
-	if(ina219_config(INA219_CONFIG_GAIN_1_40mV_400mA)) return(WRITE_FAIL);
+	if(ina219_config(INA219_CONFIG_SADCRES_12BIT_1S_532US)) return(WRITE_FAIL);
 	
 	return(OK);
 }
@@ -89,11 +89,15 @@ ina219_ret_t ina219_get_voltage(){
 #endif
 			return(OK);
 			}else{
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("Data read failed\n");
+#endif
 			return(READ_FAIL);
 		}
-		}else{
+	}else{
+#ifdef PRINT_SYSTEM_INFO
 		serial_string("Write device failed\n");
+#endif
 		return(WRITE_FAIL);
 	}
 	return(FNC_FAIL);
@@ -104,18 +108,22 @@ ina219_ret_t ina219_get_power(){
 	data_in.sb.lb = POWER_REGISTER;
 	if( i2c_write(INA219_ADDR_MAIN, &data_in.sb.lb, 1, REDO_START, LITTLE_ENDIAN) == SUCCESS ){
 		if( i2c_read(INA219_ADDR_MAIN, BUFFER_IN, 2, LITTLE_ENDIAN) == SUCCESS ){
-			shunt_sensor.power = data_in.fb * 10;
+			shunt_sensor.power = data_in.fb;
 #ifdef INA219_DEBUG
 			sprintf(print_buffer, "Data in: %d (%d : %d - %d)\n", shunt_sensor.power, data_in.fb, data_in.sb.hb, data_in.sb.lb);
 			serial_string(print_buffer);
 #endif
 			return(OK);
 		}else{
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("Data read failed\n");
+#endif
 			return(READ_FAIL);
 		}
 	}else{
+#ifdef PRINT_SYSTEM_INFO
 		serial_string("Write device failed\n");
+#endif
 		return(WRITE_FAIL);
 	}
 	return(FNC_FAIL);
@@ -127,18 +135,22 @@ ina219_ret_t ina219_get_current(){
 	data_in.sb.lb = CURRENT_REGISTER;
 	if( i2c_write(INA219_ADDR_MAIN, &data_in.sb.lb, 1, REDO_START, LITTLE_ENDIAN) == SUCCESS ){
 		if( i2c_read(INA219_ADDR_MAIN, BUFFER_IN, 2, LITTLE_ENDIAN) == SUCCESS ){
-			shunt_sensor.current = (data_in.fb);
+			shunt_sensor.current = (data_in.fb)*10;
 #ifdef INA219_DEBUG
 			sprintf(print_buffer, "Data in: %d (%d : %d - %d)\n", shunt_sensor.current, data_in.fb, data_in.sb.hb, data_in.sb.lb);
 			serial_string(print_buffer);
 #endif
 			return(OK);
 		}else{
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("Data read failed\n");
+#endif
 			return(READ_FAIL);
 		}
 	}else{
+#ifdef PRINT_SYSTEM_INFO
 		serial_string("Write device failed\n");
+#endif
 		return(WRITE_FAIL);
 	}
 	return(FNC_FAIL);
@@ -156,11 +168,15 @@ ina219_ret_t ina219_get_shunt_voltage(){
 			return(OK);
 			}else{
 			return(READ_FAIL);
+#ifdef PRINT_SYSTEM_INFO
 			serial_string("Data read failed\n");
+#endif
 		}
 		}else{
 		return(WRITE_FAIL);
+#ifdef PRINT_SYSTEM_INFO
 		serial_string("Write device failed\n");
+#endif		
 	}
 	return(FNC_FAIL);
 }
