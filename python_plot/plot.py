@@ -11,9 +11,15 @@ import struct
 import pandas as pd
 import numpy as np
 
+#portName = '/dev/ttyUSB0'     # for linux users
+portName = 'COM8'     # for windows users
+baudRate = 9600
+maxPlotLength = 100
+anim = []
+dataNumBytes = 7        # number of bytes of 1 data point
 
 class serialPlot:
-    def __init__(self, serialPort = 'COM6', serialBaud = 9600, plotLength = 100, dataNumBytes = 2):
+    def __init__(self, serialPort = 'COM8', serialBaud = 9600, plotLength = 100, dataNumBytes = 2):
         self.port = serialPort
         self.baud = serialBaud
         self.plotMaxLength = plotLength
@@ -112,12 +118,7 @@ class serialPlot:
 # creating data
 # defining function to add line plot
 
-portName = 'COM6'     # for windows users
-baudRate = 9600
-maxPlotLength = 100
-dataNumBytes = 7        # number of bytes of 1 data point
 s = serialPlot(portName, baudRate, maxPlotLength, dataNumBytes)   # initializes all required variables
-anim = []
 
 def bt_stop(val):
     s.writeSerial('stop\n')
@@ -142,9 +143,9 @@ def makeFigure(xLimit, yLimit, title):
     xmin, xmax = xLimit
     ymin, ymax = yLimit
     fig = plt.figure()
-    ax = plt.axes(xlim=(xmin, xmax), ylim=(int(ymin - (ymax - ymin) / 10), int(ymax + (ymax - ymin) / 10)))
+    ax = plt.axes(xlim=(xmin, xmax/10), ylim=(int(ymin - (ymax - ymin) / 10), int(ymax + (ymax - ymin) / 10)))
     ax.set_title(title)
-    ax.set_xlabel("Time")
+    ax.set_xlabel("Seconds")
     ax.set_ylabel("Output")
     return fig, ax    
     
@@ -152,7 +153,7 @@ def main():
     # portName = '/dev/ttyUSB0'
     s.readSerialStart()                                               # starts background thread
     # plotting starts below
-    pltInterval = 50    # Period at which the plot animation updates [ms]
+    pltInterval = 100    # Period at which the plot animation updates [ms]
     lineLabelText = ['V', 'C', 'Z']
     title = ['Voltage', ' Current', 'Z Acceleration']
     xLimit = [(0, maxPlotLength), (0, maxPlotLength), (0, maxPlotLength)]
