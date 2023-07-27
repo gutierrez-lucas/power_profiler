@@ -17,6 +17,10 @@ typedef enum{
 	CONFIG_2,
 	CONFIG_3,
 	CONFIG_4,
+	CONFIG_5,
+	CONFIG_6,
+	CONFIG_7,
+	CONFIG_8,
 	FAIL
 }sm_command_t;
 

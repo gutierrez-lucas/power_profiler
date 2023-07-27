@@ -13,7 +13,8 @@ static char print_buffer[50];
 
 _INA219_C shunt_sensor;
 
-union my_byte{
+union my_byte{   
+// this is a tool for automatic conversion between full byte -> low byte + high byte
 	struct sp{
 		uint8_t lb; // little endian
 		uint8_t hb;
@@ -66,12 +67,18 @@ ina219_ret_t ina219_config(ina219_rate_t rate){ // by the moment I only care abo
 
 void ina219_change_calibration_value(ina219_calibration_t new_calib){
 	shunt_sensor.conf_calibration_value = new_calib; // default
+	switch(new_calib){
+		case(CALIBRATION_40mV_400mA):	shunt_sensor.current_lsb_adj = 1; break;
+		case(CALIBRATION_80mV_800mA):	shunt_sensor.current_lsb_adj = 2; break;
+		case(CALIBRATION_160mV_1A6):	shunt_sensor.current_lsb_adj = 4; break;
+		case(CALIBRATION_320mV_2A):		shunt_sensor.current_lsb_adj = 8; break;
+		default:						shunt_sensor.current_lsb_adj = 1; break;
+	}
 }
 
 ina219_ret_t ina219_init(){
 	i2c_init(TW_FREQ_400K, true);
-	shunt_sensor.conf_calibration_value = CALIBRATION_40mV_400mA; // default 
-	
+	ina219_change_calibration_value(CALIBRATION_40mV_400mA);
 	if(ina219_calibrate() != OK) return(WRITE_FAIL);
 	if(ina219_config(INA219_CONFIG_SADCRES_12BIT_1S_532US)) return(WRITE_FAIL);
 	
@@ -88,7 +95,7 @@ ina219_ret_t ina219_get_voltage(){
 			serial_string(print_buffer);
 #endif
 			return(OK);
-			}else{
+		}else{
 #ifdef PRINT_SYSTEM_INFO
 			serial_string("Data read failed\n");
 #endif
@@ -135,7 +142,7 @@ ina219_ret_t ina219_get_current(){
 	data_in.sb.lb = CURRENT_REGISTER;
 	if( i2c_write(INA219_ADDR_MAIN, &data_in.sb.lb, 1, REDO_START, LITTLE_ENDIAN) == SUCCESS ){
 		if( i2c_read(INA219_ADDR_MAIN, BUFFER_IN, 2, LITTLE_ENDIAN) == SUCCESS ){
-			shunt_sensor.current = (data_in.fb)*10;
+			shunt_sensor.current = (data_in.fb)*shunt_sensor.current_lsb_adj;
 #ifdef INA219_DEBUG
 			sprintf(print_buffer, "Data in: %d (%d : %d - %d)\n", shunt_sensor.current, data_in.fb, data_in.sb.hb, data_in.sb.lb);
 			serial_string(print_buffer);
@@ -166,13 +173,13 @@ ina219_ret_t ina219_get_shunt_voltage(){
 			serial_string(print_buffer);
 #endif
 			return(OK);
-			}else{
+		}else{
 			return(READ_FAIL);
 #ifdef PRINT_SYSTEM_INFO
 			serial_string("Data read failed\n");
 #endif
 		}
-		}else{
+	}else{
 		return(WRITE_FAIL);
 #ifdef PRINT_SYSTEM_INFO
 		serial_string("Write device failed\n");

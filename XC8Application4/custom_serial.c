@@ -95,7 +95,27 @@ sm_command_t logic_handler() {
 #ifdef PRINT_SYSTEM_INFO
 			serial_string("CONFIG_4\n");
 #endif
-			return(CONFIG_4);			
+			return(CONFIG_4);
+		}else if(!strncmp(rx_line, "config5", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
+			serial_string("CONFIG_5\n");
+#endif
+			return(CONFIG_5);						
+		}else if(!strncmp(rx_line, "config6", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
+			serial_string("CONFIG_6\n");
+#endif
+			return(CONFIG_6);
+		}else if(!strncmp(rx_line, "config7", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
+			serial_string("CONFIG_7\n");
+#endif
+			return(CONFIG_7);			
+		}else if(!strncmp(rx_line, "config8", strlen(rx_line))) {
+#ifdef PRINT_SYSTEM_INFO
+			serial_string("CONFIG_8\n");
+#endif
+			return(CONFIG_8);
 		}else{
 #ifdef PRINT_SYSTEM_INFO
 			serial_string("FAIL\n");

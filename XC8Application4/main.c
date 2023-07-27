@@ -73,6 +73,26 @@ void sm_process_state(){
 			state_machine.delay = DELAY_18MS;
 			state_machine.state = state_machine.prev_state;
 			break;
+		case(CONFIG_5):
+			ina219_change_calibration_value(CALIBRATION_40mV_400mA);
+			ina219_calibrate();
+			state_machine.state = state_machine.prev_state;
+			break;
+		case(CONFIG_6):
+			ina219_change_calibration_value(CALIBRATION_80mV_800mA);
+			ina219_calibrate();
+			state_machine.state = state_machine.prev_state;
+			break;
+		case(CONFIG_7):
+			ina219_change_calibration_value(CALIBRATION_160mV_1A6);
+			ina219_calibrate();
+			state_machine.state = state_machine.prev_state;
+			break;
+		case(CONFIG_8):
+			ina219_change_calibration_value(CALIBRATION_320mV_2A);
+			ina219_calibrate();
+			state_machine.state = state_machine.prev_state;
+			break;
 		default: break;
 	}
 }

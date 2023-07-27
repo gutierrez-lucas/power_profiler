@@ -18,6 +18,8 @@ typedef struct _INA219_C{
 	// -- configuration
 	ina219_calibration_t conf_calibration_value;
 	ina219_gain_t conf_gain_value;
+	// --
+	uint8_t current_lsb_adj;
 	// -- data
 	int16_t voltage;
 	int16_t shunt_voltage;

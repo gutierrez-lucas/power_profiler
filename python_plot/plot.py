@@ -65,7 +65,7 @@ class serialPlot:
         if chr(self.rawData[0]) == 'c':   
             for x in range(1,len(self.rawData)):  
                 self.current_value += (self.rawData[x]-48)*10**(len(self.rawData)-(x+1))
-            self.current_tuple = (self.current_value/1000,)
+            self.current_tuple = (self.current_value/100,)
             # print("current", self.current_tuple)
         elif chr(self.rawData[0]) == 'v':
             for x in range(1,len(self.rawData)):  
@@ -137,7 +137,15 @@ def bt_conf2(val):
 def bt_conf3(val):
     s.writeSerial('config3\n') 
 def bt_conf4(val):
-    s.writeSerial('config4\n')             
+    s.writeSerial('config4\n')  
+def bt_conf5(val):
+    s.writeSerial('config5\n')  
+def bt_conf6(val):
+    s.writeSerial('config6\n')  
+def bt_conf7(val):
+    s.writeSerial('config7\n')  
+def bt_conf8(val):
+    s.writeSerial('config8\n')                             
        
 def makeFigure(xLimit, yLimit, title):
     xmin, xmax = xLimit
@@ -145,49 +153,66 @@ def makeFigure(xLimit, yLimit, title):
     fig = plt.figure()
     ax = plt.axes(xlim=(xmin, xmax/10), ylim=(int(ymin - (ymax - ymin) / 10), int(ymax + (ymax - ymin) / 10)))
     ax.set_title(title)
-    ax.set_xlabel("Seconds")
+    ax.set_xlabel("Seconds * 0.1")
     ax.set_ylabel("Output")
     return fig, ax    
-    
+
 def main():
     # portName = '/dev/ttyUSB0'
     s.readSerialStart()                                               # starts background thread
     # plotting starts below
-    pltInterval = 100    # Period at which the plot animation updates [ms]
-    lineLabelText = ['V', 'C', 'Z']
+    pltInterval = 1    # Period at which the plot animation updates [ms]
+    lineLabelText = ['V [v]', 'C [mA]', 'Z']
     title = ['Voltage', ' Current', 'Z Acceleration']
-    xLimit = [(0, maxPlotLength), (0, maxPlotLength), (0, maxPlotLength)]
-    yLimit = [(0, 10), (0, 20), (-1, 1)]
+    xLimit = [(0, maxPlotLength*10), (0, maxPlotLength*10), (0, maxPlotLength*10)]
+    yLimit = [(0, 7), (0, 400), (-1, 1)]
     style = ['r-', 'g-', 'b-']    # linestyles for the different plots
     
         # defining button and add its functionality
-    axes = plt.axes([0.45, 0.2, 0.1, 0.075])
+    axes = plt.axes([0.45, 0.4, 0.1, 0.075])
     bn_stop = Button(axes, 'STOP',color="yellow")
     bn_stop.on_clicked(bt_stop)
     
-    axes = plt.axes([0.25, 0.2, 0.1, 0.075])
+    axes = plt.axes([0.25, 0.4, 0.1, 0.075])
     bn_pause = Button(axes, 'PAUSE',color="yellow")
     bn_pause.on_clicked(bt_pause)    
 
-    axes = plt.axes([0.05, 0.2, 0.1, 0.075])
+    axes = plt.axes([0.05, 0.4, 0.1, 0.075])
     bn_start = Button(axes, 'START',color="yellow")
     bn_start.on_clicked(bt_start)
     
-    axes = plt.axes([0.45, 0.1, 0.15, 0.075])
+    axes = plt.axes([0.45, 0.25, 0.15, 0.075])
     bn_confg1 = Button(axes, '1 Sample\ne/ 532uS',color="yellow")
     bn_confg1.on_clicked(bt_conf1)    
 
-    axes = plt.axes([0.3, 0.1, 0.15, 0.075])
+    axes = plt.axes([0.3, 0.25, 0.15, 0.075])
     bn_confg2 = Button(axes, '4 Sample\ne/ 213uS',color="yellow")
     bn_confg2.on_clicked(bt_conf2)    
     
-    axes = plt.axes([0.15, 0.1, 0.15, 0.075])
+    axes = plt.axes([0.15, 0.25, 0.15, 0.075])
     bn_confg3 = Button(axes, '16 Sample\ne/ 851uS',color="yellow")
     bn_confg3.on_clicked(bt_conf3) 
 
-    axes = plt.axes([0, 0.1, 0.15, 0.075])
+    axes = plt.axes([0, 0.25, 0.15, 0.075])
     bn_confg4 = Button(axes, '32 Sample\ne/ 17mS',color="yellow")
     bn_confg4.on_clicked(bt_conf4)
+    
+    axes = plt.axes([0.45, 0.1, 0.15, 0.075])
+    bn_confg5 = Button(axes, 'Imax = 400mA',color="yellow")
+    bn_confg5.on_clicked(bt_conf5)    
+
+    axes = plt.axes([0.3, 0.1, 0.15, 0.075])
+    bn_confg6 = Button(axes, 'Imax = 800mA',color="yellow")
+    bn_confg6.on_clicked(bt_conf6)    
+    
+    axes = plt.axes([0.15, 0.1, 0.15, 0.075])
+    bn_confg7 = Button(axes, 'Imax = 1.6A',color="yellow")
+    bn_confg7.on_clicked(bt_conf7) 
+
+    axes = plt.axes([0, 0.1, 0.15, 0.075])
+    bn_confg8 = Button(axes, 'Imax = 2A',color="yellow")
+    bn_confg8.on_clicked(bt_conf8)
+        
     
     plt.savefig('filename1')
     
@@ -196,7 +221,7 @@ def main():
         lines = ax.plot([], [], style[i], label=lineLabelText[i])[0]
         timeText = ax.text(0.50, 0.95, '', transform=ax.transAxes)
         lineValueText = ax.text(0.50, 0.90, '', transform=ax.transAxes)
-        anim.append(animation.FuncAnimation(fig, s.getSerialData, fargs=(lines, lineValueText, lineLabelText[i], timeText, i), interval=pltInterval))  # fargs has to be a tuple
+        anim.append(animation.FuncAnimation(fig, s.getSerialData, fargs=(lines, lineValueText, lineLabelText[i], timeText, i), interval=pltInterval, cache_frame_data=False))  # fargs has to be a tuple
         plt.legend(loc="upper left")
 
         
