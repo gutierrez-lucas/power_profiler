@@ -4,38 +4,45 @@
 #include <string.h>
 #include "custom_serial.h"
 #include "main.h"
+#include "fms.h"
+
+static const int USART_BAUDRATE  = 9600;
+static inline int UBRR_VALUE(){return(((F_CPU/(USART_BAUDRATE*16UL)))-1);}
+	
+static bool rx_first_byte = 0;
+#ifdef PRINT_SYSTEM_INFO
+static char rx_buffer[RX_BUFFER_SIZE]; // debug buffer
+#endif
 
 ISR(USART_RX_vect)
 {
-	if(waiting == 0) // Empty buffer
-	memset(rx_line, 0, RX_LINE_SIZE);
+	if(rx_first_byte == 0) memset(rx_line, 0, RX_LINE_SIZE); // wipe rx buffer before loading
 
-	waiting = 1; // Block
+	rx_first_byte = 1; // Block
 
 	unsigned char input = UDR0; 	// Receive data
-	if(input != '\n')
-	rx_line[rx_line_pos++] = input;
+	if(input != '\n')	rx_line[rx_line_pos++] = input; // save bytes until 'end of line'
 
-	if(rx_line_pos >= RX_LINE_SIZE || (input == '\n' && rx_line_pos > 0)) { 	// Handle interrupt
+	if(rx_line_pos >= RX_LINE_SIZE || (input == '\n' && rx_line_pos > 0)) {
+		// if MAX size, or end of line then process
+		rx_line_pos = 0;
+		rx_first_byte = 0;
 		state_machine.prev_state = state_machine.state;
-		state_machine.state = logic_handler(); 		// Handle result
-		rx_line_pos = 0;  // Resize
-		waiting = 0; // Unblock
+		state_machine.state = sm_parser();
 	}
 }
 
 void serial_init(){
-	UBRR0 = UBRR_VALUE;			// set baud rate
-	UCSR0B|=(1<<TXEN0);			// enable TX
-	UCSR0B|=(1<<RXEN0);			// enable RX
-	UCSR0B|=(1<<RXCIE0);			// RX complete interrupt
-	UCSR0C|=(1<<UCSZ01)|(1<<UCSZ01); 	// no parity, 1 stop bit, 8-bit data
+	UBRR0 = UBRR_VALUE();			// baud_rate
+	UCSR0B|=(1<<TXEN0);			// TXen
+	UCSR0B|=(1<<RXEN0);			// RXen
+	UCSR0B|=(1<<RXCIE0);		// RX int
+	UCSR0C = 0x06;			 	// 8N1
 	
-	sei();
+	sei();				// global int en
 	
-	rx_buffer_pos = 0;
 	rx_line_pos = 0;
-	waiting = 0;
+	rx_first_byte = 0;
 }
 
 void serial_char(char data){
@@ -46,89 +53,4 @@ void serial_char(char data){
 void serial_string(const char* s) {
 	while (*s != '\0')
 	serial_char(*s++);
-}
-
-bool compare_string(char *first, const char *second) {
-	while (*first == *second && *first != '\0') {
-		first++;
-		second++;
-	}
-	// 0 -> not equal
-	// 1 -> equal
-	return *first == '\0' && *second == '\0';
-}
-
-sm_command_t logic_handler() {
-	char print_h[50];
-	// Check commands
-	if(!strncmp(rx_line, "start", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO		
-			serial_string("START\n");
-#endif			
-			return(START);
-		}else if(!strncmp(rx_line, "stop", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("STOP\n");
-#endif
-			return(STOP);
-		}else if(!strncmp(rx_line, "pause", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("PAUSE\n");
-#endif
-			return(PAUSE);		
-		}else if(!strncmp(rx_line, "config1", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("CONFIG_1\n");
-#endif
-			return(CONFIG_1);		
-		}else if(!strncmp(rx_line, "config2", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("CONFIG_2\n");
-#endif
-			return(CONFIG_2);
-		}else if(!strncmp(rx_line, "config3", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("CONFIG_3\n");
-#endif
-			return(CONFIG_3);
-		}else if(!strncmp(rx_line, "config4", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("CONFIG_4\n");
-#endif
-			return(CONFIG_4);
-		}else if(!strncmp(rx_line, "config5", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("CONFIG_5\n");
-#endif
-			return(CONFIG_5);						
-		}else if(!strncmp(rx_line, "config6", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("CONFIG_6\n");
-#endif
-			return(CONFIG_6);
-		}else if(!strncmp(rx_line, "config7", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("CONFIG_7\n");
-#endif
-			return(CONFIG_7);			
-		}else if(!strncmp(rx_line, "config8", strlen(rx_line))) {
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("CONFIG_8\n");
-#endif
-			return(CONFIG_8);
-		}else{
-#ifdef PRINT_SYSTEM_INFO
-			serial_string("FAIL\n");
-			// Preview current
-			serial_string("input: ");
-			serial_string(rx_line);
-			serial_string("\n");
-			// Handle overflow
-			if(rx_buffer_pos >= RX_BUFFER_SIZE){
-				rx_buffer_pos = 0;
-				memset(rx_buffer, 0, RX_BUFFER_SIZE);
-			}
-#endif
-		return(FAIL);
-	}
 }

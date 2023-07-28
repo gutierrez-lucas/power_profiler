@@ -38,8 +38,8 @@ SUBDIRS :=
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../custom_i2c.c \
-../custom_led.c \
 ../custom_serial.c \
+../fms.c \
 ../INA219.c \
 ../main.c
 
@@ -52,29 +52,29 @@ ASM_SRCS +=
 
 OBJS +=  \
 custom_i2c.o \
-custom_led.o \
 custom_serial.o \
+fms.o \
 INA219.o \
 main.o
 
 OBJS_AS_ARGS +=  \
 custom_i2c.o \
-custom_led.o \
 custom_serial.o \
+fms.o \
 INA219.o \
 main.o
 
 C_DEPS +=  \
 custom_i2c.d \
-custom_led.d \
 custom_serial.d \
+fms.d \
 INA219.d \
 main.d
 
 C_DEPS_AS_ARGS +=  \
 custom_i2c.d \
-custom_led.d \
 custom_serial.d \
+fms.d \
 INA219.d \
 main.d
 
@@ -99,14 +99,14 @@ LINKER_SCRIPT_DEP+=
 	@echo Finished building: $<
 	
 
-./custom_led.o: .././custom_led.c
+./custom_serial.o: .././custom_serial.c
 	@echo Building file: $<
 	@echo Invoking: XC8 C Compiler : 2.36
 	$(QUOTE)C:\Program Files\Microchip\xc8\v2.36\bin\xc8-cc.exe$(QUOTE)  -mcpu=ATmega328P  -mdfp="C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\xc8"  -c -x c -funsigned-char -funsigned-bitfields -mext=cci -D__ATmega328P__ -DNDEBUG  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -Wall -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-./custom_serial.o: .././custom_serial.c
+./fms.o: .././fms.c
 	@echo Building file: $<
 	@echo Invoking: XC8 C Compiler : 2.36
 	$(QUOTE)C:\Program Files\Microchip\xc8\v2.36\bin\xc8-cc.exe$(QUOTE)  -mcpu=ATmega328P  -mdfp="C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\xc8"  -c -x c -funsigned-char -funsigned-bitfields -mext=cci -D__ATmega328P__ -DNDEBUG  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -Wall -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
