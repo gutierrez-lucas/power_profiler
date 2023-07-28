@@ -254,7 +254,7 @@ Disassembly of section .text:
 Disassembly of section .text:
 
 0000209a <__bad_interrupt>:
-    209a:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+    209a:	0c 94 00 00 	jmp	0	; 0x0 <__TEXT_REGION_ORIGIN__>
 
 Disassembly of section .text.i2c_init:
 
@@ -580,15 +580,15 @@ Disassembly of section .text.__vector_18:
     20c8:	81 e0       	ldi	r24, 0x01	; 1
     20ca:	80 93 c9 01 	sts	0x01C9, r24	; 0x8001c9 <_end>
     20ce:	20 91 c6 00 	lds	r18, 0x00C6	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f80c6>
-    20d2:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <_edata>
-    20d6:	90 91 01 01 	lds	r25, 0x0101	; 0x800101 <_edata+0x1>
+    20d2:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <__DATA_REGION_ORIGIN__>
+    20d6:	90 91 01 01 	lds	r25, 0x0101	; 0x800101 <__DATA_REGION_ORIGIN__+0x1>
     20da:	2a 30       	cpi	r18, 0x0A	; 10
     20dc:	f9 f0       	breq	.+62     	; 0x211c <__vector_18+0x7e>
     20de:	ac 01       	movw	r20, r24
     20e0:	4f 5f       	subi	r20, 0xFF	; 255
     20e2:	5f 4f       	sbci	r21, 0xFF	; 255
-    20e4:	50 93 01 01 	sts	0x0101, r21	; 0x800101 <_edata+0x1>
-    20e8:	40 93 00 01 	sts	0x0100, r20	; 0x800100 <_edata>
+    20e4:	50 93 01 01 	sts	0x0101, r21	; 0x800101 <__DATA_REGION_ORIGIN__+0x1>
+    20e8:	40 93 00 01 	sts	0x0100, r20	; 0x800100 <__DATA_REGION_ORIGIN__>
     20ec:	fc 01       	movw	r30, r24
     20ee:	ee 5f       	subi	r30, 0xFE	; 254
     20f0:	fe 4f       	sbci	r31, 0xFE	; 254
@@ -615,8 +615,8 @@ Disassembly of section .text.__vector_18:
     211a:	18 95       	reti
     211c:	89 2b       	or	r24, r25
     211e:	69 f3       	breq	.-38     	; 0x20fa <__vector_18+0x5c>
-    2120:	10 92 01 01 	sts	0x0101, r1	; 0x800101 <_edata+0x1>
-    2124:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <_edata>
+    2120:	10 92 01 01 	sts	0x0101, r1	; 0x800101 <__DATA_REGION_ORIGIN__+0x1>
+    2124:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <__DATA_REGION_ORIGIN__>
     2128:	10 92 c9 01 	sts	0x01C9, r1	; 0x8001c9 <_end>
     212c:	80 91 b4 01 	lds	r24, 0x01B4	; 0x8001b4 <state_machine>
     2130:	80 93 b5 01 	sts	0x01B5, r24	; 0x8001b5 <state_machine+0x1>
@@ -653,8 +653,8 @@ Disassembly of section .text.serial_init:
  118:	86 e0       	ldi	r24, 0x06	; 6
  11a:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__TEXT_REGION_LENGTH__+0x7f80c2>
  11e:	78 94       	sei
- 120:	10 92 01 01 	sts	0x0101, r1	; 0x800101 <_edata+0x1>
- 124:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <_edata>
+ 120:	10 92 01 01 	sts	0x0101, r1	; 0x800101 <__DATA_REGION_ORIGIN__+0x1>
+ 124:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <__DATA_REGION_ORIGIN__>
  128:	10 92 c9 01 	sts	0x01C9, r1	; 0x8001c9 <_end>
  12c:	08 95       	ret
 
@@ -1197,7 +1197,7 @@ Disassembly of section .text.ina219_init:
 0000012e <ina219_init>:
  12e:	61 e0       	ldi	r22, 0x01	; 1
  130:	82 e0       	ldi	r24, 0x02	; 2
- 132:	66 d1       	rcall	.+716    	; 0x400 <i2c_init>
+ 132:	66 d1       	rcall	.+716    	; 0x400 <__EEPROM_REGION_LENGTH__>
  134:	85 e2       	ldi	r24, 0x25	; 37
  136:	93 e8       	ldi	r25, 0x83	; 131
  138:	90 93 bb 01 	sts	0x01BB, r25	; 0x8001bb <shunt_sensor+0x2>
