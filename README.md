@@ -19,8 +19,8 @@ Connect using the following schematic:
 
 ## Usage
 
-Compile and program the Atmega328p. 
-Excecute the (very-very awful looking) python script with:
+1) Compile the project and flash, or directly flash the .hex, into the Atmega328p. 
+2) Excecute the (very-very awful looking) python script with:
 
 ```
 python3 /python_plot/plot.py
