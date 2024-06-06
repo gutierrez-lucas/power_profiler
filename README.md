@@ -42,7 +42,7 @@ Result:
 
 ![Example1-result](/Docs/example-led-results.png)
 
-## Variable tension / current
+## Variable voltage / current
 
 Using a variable laboratory power source, change current from 2V to 6V with the same led-resistor scheme from last example
 
