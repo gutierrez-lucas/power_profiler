@@ -35,9 +35,11 @@ Use it, is self explanatory.
 Connect a green led with a 170ohm resistor to Vcc (5V) and get the current:
 
 Schematic:
+
 ![Example1](/Docs/example-led.png)
 
 Result:
+
 ![Example1-result](/Docs/example-led-results.png)
 
 ## Variable tension / current
@@ -52,9 +54,11 @@ The current consumed by an ESP32 SoC will be measured, using a WROOM32-dev devel
 This will be powered by the adjustable supply, by 5V to the regulator input of the board. Although the regulator delivers the 3V3 required by the ESP32, the current that circulates between the source and the assembly will be measured and, therefore, a voltage of 5V will be seen.
 
 Schematic:
+
 ![Example3](/Docs/example-esp32.png)
 
 Results:
+
 ![Example3-result](/Docs/example-esp32-results.png)
 
 Reference:
